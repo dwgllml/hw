@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>D-Day 계산기 🚀</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .dday-result {
+        font-size: 3em;
+        font-weight: bold;
+        color: #007bff; /* 청색 계열로 강조 */
+        margin-top: 15px;
+        text-align: center;
+    }
+    .past {
+        color: #28a745; /* 녹색 계열 (D+ 경과) */
+    }
+    .future {
+        color: #dc3545; /* 적색 계열 (D- 남음) */
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>이름: 이지희</h1>
+  <p class="subtitle">한 줄 소개: 소프트웨어학부 2024403018</p>
+</header>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="portfolio.html">Portfolio</a>
+  <a href="contact.html">Contact</a>
+</nav>
+<main class="container">
+<section>
+  <h2>🗓️ 목표까지 D-Day 계산</h2>
+  <p>원하는 목표 날짜를 입력하면 오늘을 기준으로 남은/경과된 일수를 계산해 드립니다.</p>
+  
+  <script>
+    // 1. 오늘 날짜 객체 생성
+    let now = new Date(); 
+
+    // 2. prompt()로 연, 월, 일 입력받기
+    let yearStr = prompt("목표 연도를 입력하세요 (예: 2025)", "2025");
+    let monthStr = prompt("목표 월을 입력하세요 (1~12)", "12");
+    let dayStr = prompt("목표 일을 입력하세요 (1~31)", "25");
+
+    // 3. 입력 취소 및 null 확인
+    if (!yearStr || !monthStr || !dayStr) {
+      document.write("<h3>❌ D-Day 계산이 취소되었습니다.</h3>");
+    } else {
+      // 4. parseInt()로 문자열을 숫자형으로 변환
+      let year = parseInt(yearStr);
+      let month = parseInt(monthStr);
+      let day = parseInt(dayStr);
+
+      // 5. 목표 날짜 객체 생성 (월은 -1 처리) 
+      let targetDate = new Date(year, month - 1, day); 
+
+      // 6. 날짜 차이 계산 (밀리초 단위) 
+      let diffMs = targetDate.getTime() - now.getTime();
+
+      // 7. 밀리초를 일 단위로 변환 및 Math.ceil() 적용 
+      let diffDay = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+      // 8. 결과 출력
+      document.write("<h4>⏰ 기준 날짜: " + now.toLocaleDateString() + "</h4>");
+      document.write("<h4>⭐ 목표 날짜: " + targetDate.toLocaleDateString() + "</h4>"); 
+      document.write("<hr>");
+
+      // 9. D-Day 조건별 출력 (if/else 사용)
+      if (diffDay === 0) {
+        document.write('<p class="dday-result future">🎉 D-Day 입니다!</p>');
+      } else if (diffDay > 0) {
+        document.write('<p class="dday-result future">D-' + diffDay + '</p>');
+        document.write('<p>목표일까지 **' + diffDay + '일** 남았습니다.</p>');
+      } else {
+        // 음수일 경우 Math.abs()로 절댓값 처리
+        let passedDay = Math.abs(diffDay);
+        document.write('<p class="dday-result past">D+' + passedDay + '</p>');
+        document.write('<p>목표일로부터 **' + passedDay + '일** 지났습니다.</p>');
+      }
+
+      document.write('<small><i>새로고침(F5)을 눌러 다른 날짜를 입력하세요.</i></small>');
+    }
+  </script>
+
+</section>
+</main>
+<footer>
+  <small>&copy; <span id="year"></span> 이름: 이지희</small>
+</footer>
+<script src="script.js"></script>
+</body>
+</html>
