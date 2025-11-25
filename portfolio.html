@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>이지희 | Projects</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<header>
+  <h1>My Projects</h1>
+  <p class="subtitle">실습 과제 및 개인 프로젝트 결과물입니다</p>
+</header>
+
+<nav>
+  <a href="index.html"><i class="fas fa-home"></i> Home</a>
+  <a href="about.html"><i class="fas fa-user"></i> About</a>
+  <a href="portfolio.html"><i class="fas fa-rocket"></i> Projects</a>
+  <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+</nav>
+
+<main class="container">
+<section style="text-align: center;">
+  <h2><i class="fas fa-folder-open"></i> Project List</h2>
+  <p style="margin-bottom: 40px; color: #aaa;">각 항목을 클릭하여 결과물을 확인하세요.</p>
+  
+  <div style="display: inline-block; width: 100%; max-width: 700px; text-align: left;">
+    <ul class="project-list">
+        
+        <li class="project-item animate-up">
+        <h3>실습 1: D-Day 계산기 (Date 객체)</h3>
+        <p style="font-size: 0.95rem; color: #bbb; margin-bottom: 15px;">
+            오늘 날짜와 목표 날짜를 입력받아 남은/경과된 일수(D-Day)를 계산하는 기능입니다.
+        </p>
+        <div>
+            <a href="dday.html" style="font-weight:bold; color: var(--primary);">
+                ▶ 실행하기 <i class="fas fa-external-link-alt"></i>
+            </a>
+        </div>
+        </li>
+
+        <li class="project-item animate-up delay-100">
+        <h3>실습 2: 랜덤 뽑기 (Math 객체)</h3>
+        <p style="font-size: 0.95rem; color: #bbb; margin-bottom: 15px;">
+            콤마로 구분된 후보 항목을 입력받아 무작위로 하나를 뽑아주는 결정장애 해결 기능입니다.
+        </p>
+        <div>
+            <a href="random.html" style="font-weight:bold; color: var(--primary);">
+                ▶ 실행하기 <i class="fas fa-external-link-alt"></i>
+            </a>
+        </div>
+        </li>
+
+        <li class="project-item animate-up delay-200">
+        <h3>실습 3: 스타일 변환기 (DOM Control)</h3>
+        <p style="font-size: 0.95rem; color: #bbb; margin-bottom: 15px;">
+            DOM 객체의 Style 프로퍼티를 제어하여 실시간으로 요소의 디자인(색상, 크기 등)을 변경합니다.
+        </p>
+        <div>
+            <a href="dom_style.html" style="font-weight:bold; color: var(--primary);">
+                ▶ 실행하기 <i class="fas fa-external-link-alt"></i>
+            </a>
+        </div>
+        </li>
+
+        <li class="project-item animate-up delay-300">
+        <h3>실습 4: 댓글 시스템 (DOM List)</h3>
+        <p style="font-size: 0.95rem; color: #bbb; margin-bottom: 15px;">
+            createElement와 removeChild를 활용하여 동적으로 메시지를 추가하고 삭제하는 앱입니다.
+        </p>
+        <div>
+            <a href="dom_list.html" style="font-weight:bold; color: var(--primary);">
+                ▶ 실행하기 <i class="fas fa-external-link-alt"></i>
+            </a>
+        </div>
+        </li>
+
+    </ul>
+  </div>
+
+</section>
+</main>
+
+<footer>
+  <small>&copy; <span id="year"></span> 이지희. All rights reserved.</small>
+</footer>
+<script src="script.js"></script>
+</body>
+</html>

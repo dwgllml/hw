@@ -1,178 +1,245 @@
-/* 다크 모드 테마 설정 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Outfit:wght@400;700&display=swap');
+
 :root {
-  --background-color: #121212; /* 진한 배경 */
-  --text-color: #e0e0e0;       /* 밝은 텍스트 */
-  --primary-color: #bb86fc;    /* 강조 색상 (보라 계열) */
-  --secondary-color: #333333;  /* 카드 배경, 구분선 등 */
-  --hover-color: #cfbcff;      /* 호버 색상 */
+  --primary: #bb86fc;       /* 메인 네온 퍼플 */
+  --primary-variant: #3700b3;
+  --secondary: #03dac6;     /* 보조 민트색 */
+  --bg-dark: #121212;       /* 찐 배경색 */
+  --surface: rgba(30, 30, 30, 0.6); /* 유리질감 배경 */
+  --text-main: #e0e0e0;
+  --text-muted: #aaaaaa;
+  --glow: 0 0 10px rgba(187, 134, 252, 0.7);
   --shadow-color: rgba(0, 0, 0, 0.4);
 }
 
-/* 기본 설정 */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; } /* 부드러운 스크롤 */
+
+html { scroll-behavior: smooth; }
+
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+  background: radial-gradient(circle at top right, #2a2a2a, #121212); /* 고급스러운 그라데이션 */
+  color: var(--text-main);
   line-height: 1.6;
-}
-
-/* 폰트 및 링크 스타일 */
-h1, h2 { margin-bottom: 1rem; color: var(--primary-color); }
-a {
-  color: var(--primary-color);
-  text-decoration: none;
-  transition: color 0.3s;
-}
-a:hover { color: var(--hover-color); }
-.highlight { color: var(--primary-color); font-weight: 700; }
-
-/* 네비게이션 바 */
-#navbar {
+  min-height: 100vh;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: var(--secondary-color);
-  box-shadow: 0 2px 5px var(--shadow-color);
+  flex-direction: column;
+}
+
+/* --- 헤더 & 네비게이션 --- */
+header {
+  text-align: center;
+  padding: 3rem 1rem 1rem;
+  background: transparent;
+  transition: all 0.4s ease;
   position: sticky;
   top: 0;
   z-index: 1000;
 }
-.nav-brand { font-size: 1.5rem; font-weight: 700; color: #fff; }
-.nav-links { list-style: none; display: flex; gap: 2rem; }
-.nav-links a { color: #fff; font-weight: 500; }
-.nav-links a:hover { color: var(--primary-color); }
 
-/* 섹션 공통 */
-.content-section {
-  padding: 4rem 2rem;
-  max-width: 1000px;
-  margin: 0 auto;
-  min-height: 80vh;
-}
-.content-section:nth-child(even) { /* 짝수 섹션 배경을 약간 다르게 */
-    background-color: #1f1f1f;
+header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #fff, var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
 }
 
-/* 히어로 섹션 (Home) */
-.hero-section {
-  min-height: 100vh;
+header .subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* 스크롤 시 헤더 변화 (.scrolled) */
+header.scrolled {
+    background: rgba(18, 18, 18, 0.85);
+    backdrop-filter: blur(10px);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+nav {
   display: flex;
   justify-content: center;
-  align-items: center;
-  text-align: center;
-  background: linear-gradient(135deg, #121212, #2a2a2a);
-  padding: 0 2rem;
-}
-.hero-content h1 { font-size: 3.5rem; margin-bottom: 0.5rem; }
-.hero-content .tagline { font-size: 1.25rem; opacity: 0.8; margin-bottom: 2rem; }
-.cta-button {
-  display: inline-block;
-  padding: 0.8rem 1.5rem;
-  background-color: var(--primary-color);
-  color: var(--background-color);
-  border-radius: 5px;
-  font-weight: 600;
-  transition: background-color 0.3s, transform 0.2s;
-}
-.cta-button:hover { background-color: var(--hover-color); transform: translateY(-3px); }
-
-/* About 섹션 */
-.about-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-}
-
-/* Skills 섹션 */
-.skills-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
-.skill-card {
-  background-color: var(--secondary-color);
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px var(--shadow-color);
-}
-.skill-card h3 { color: #fff; margin-bottom: 1rem; border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem; }
-.skill-card ul { list-style: none; padding-left: 0; }
-.skill-card li { margin-bottom: 0.5rem; }
 
-/* Projects 섹션 */
-.project-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
+nav a {
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
 }
-.project-item {
-  background-color: var(--secondary-color);
-  padding: 1.5rem;
-  border-left: 5px solid var(--primary-color);
-  border-radius: 0 8px 8px 0;
-  box-shadow: 0 2px 5px var(--shadow-color);
-  transition: transform 0.3s;
-}
-.project-item:hover { transform: translateX(5px); }
-.project-item h3 { margin-top: 0; color: #fff; }
-.project-item p { margin-bottom: 1rem; opacity: 0.9; }
 
-/* Contact 섹션 */
-.contact-info p {
-  font-size: 1.1rem;
+nav a:hover, nav a.active {
+  background: rgba(187, 134, 252, 0.1);
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 15px rgba(187, 134, 252, 0.2);
+  transform: translateY(-2px);
+}
+
+/* --- 메인 컨테이너 (유리 효과) --- */
+.container, .content-section {
+  max-width: 800px;
+  width: 90%;
+  margin: 0 auto 3rem;
+  padding: 40px;
+  background: var(--surface);
+  backdrop-filter: blur(12px); /* 핵심: 뒤가 흐릿하게 비침 */
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* 타이포그래피 및 요소 */
+h2, h3 {
+  color: var(--primary);
+  margin-top: 1.5rem;
   margin-bottom: 1rem;
 }
-.contact-info a {
-    color: var(--hover-color);
+
+h2 { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+p, li { color: #ccc; margin-bottom: 0.8rem; }
+ul, ol { margin-left: 1.5rem; }
+a { color: var(--secondary); text-decoration: none; transition: 0.3s; }
+a:hover { color: #fff; text-shadow: 0 0 5px var(--secondary); }
+
+/* 폼 스타일 (Contact) */
+.contact-form {
+  display: grid;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+label { color: var(--primary); font-weight: bold; font-size: 0.9rem; margin-left: 5px; }
+
+input, textarea {
+  width: 100%;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid #444;
+  border-radius: 12px;
+  color: white;
+  font-family: inherit;
+  transition: 0.3s;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* 버튼 스타일 */
+button, .cta-button {
+  display: inline-block;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 50px;
+  background: var(--primary);
+  color: #000;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 0 15px rgba(187, 134, 252, 0.4);
+  text-align: center;
+}
+
+button:hover, .cta-button:hover {
+  background: white;
+  transform: scale(1.02);
+  box-shadow: 0 0 25px var(--primary);
+  color: #000;
+}
+
+/* 포트폴리오 리스트 카드화 */
+.project-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.project-item {
+  background: rgba(255, 255, 255, 0.03);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid var(--primary);
+  transition: 0.3s;
+}
+
+.project-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateX(5px);
 }
 
 /* 푸터 */
 footer {
+  margin-top: auto;
   text-align: center;
-  padding: 2rem 1rem;
-  border-top: 1px solid var(--secondary-color);
-  color: #666;
-  font-size: 0.9rem;
+  padding: 2rem;
+  color: #555;
+  font-size: 0.85rem;
+  border-top: none;
 }
 
-/* 미디어 쿼리 */
-@media (max-width: 768px) {
-  #navbar { flex-direction: column; gap: 1rem; }
-  .nav-links { justify-content: center; padding: 0.5rem 0; gap: 1rem; }
-  .hero-content h1 { font-size: 2.5rem; }
-  .content-section { padding: 3rem 1rem; }
-}
-
-/* --- 실습 1: D-Day 결과 강조 (dday.html) --- */
+/* 실습 1: D-Day 결과 강조 */
 .dday-result {
     font-size: 3em;
     font-weight: bold;
     margin-top: 15px;
     text-align: center;
 }
-.past { /* D+ 경과 */
-    color: #28a745; 
-}
-.future { /* D- 남음/D-Day */
-    color: var(--primary-color); /* 테마의 강조색 사용 */
-}
+.past { color: #03dac6; } /* 민트색으로 변경 */
+.future { color: var(--primary); }
 
-/* --- 실습 2: 랜덤 뽑기 결과 강조 (random.html) --- */
+/* 실습 2: 랜덤 뽑기 결과 강조 */
 .choice-box {
-    background-color: var(--secondary-color); /* 카드 배경색 활용 */
-    border: 2px solid var(--primary-color);
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--primary);
     padding: 20px;
     margin: 20px 0;
     border-radius: 10px;
     text-align: center;
-    box-shadow: 0 4px 6px var(--shadow-color);
+    box-shadow: 0 4px 15px var(--shadow-color);
 }
 .final-choice {
     font-size: 3.5em;
     font-weight: 900;
-    color: var(--hover-color);
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary);
     line-height: 1.2;
+}
+
+/* 애니메이션 (.animate-up) */
+.animate-up {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    will-change: opacity, transform;
+}
+
+.animate-up.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.delay-100 { transition-delay: 0.1s; }
+.delay-200 { transition-delay: 0.2s; }
+.delay-300 { transition-delay: 0.3s; }
+
+@media (max-width: 600px) {
+  .container { padding: 25px; width: 95%; }
+  header h1 { font-size: 1.8rem; }
 }

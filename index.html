@@ -3,108 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>이지희 | Dev Portfolio</title>
+  <title>이지희 | Home</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+<header>
+  <h1><i class="fas fa-code"></i> Developer Portfolio</h1>
+  <p class="subtitle">광운대학교 소프트웨어학부 이지희</p>
+</header>
 
-  <nav id="navbar">
-    <div class="nav-brand">이지희</div>
-    <ul class="nav-links">
-      <li><a href="#home">Home</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-  </nav>
+<nav>
+  <a href="index.html"><i class="fas fa-home"></i> Home</a>
+  <a href="about.html"><i class="fas fa-user"></i> About</a>
+  <a href="portfolio.html"><i class="fas fa-rocket"></i> Projects</a>
+  <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+</nav>
 
-  <section id="home" class="hero-section">
-    <div class="hero-content">
-      <h1>안녕하세요, <span class="highlight">이지희</span>입니다.</h1>
-      <p class="tagline">광운대학교 소프트웨어학부 (2024403018)</p>
-      <a href="#projects" class="cta-button">프로젝트 보기</a>
-    </div>
-  </section>
-
-  <section id="about" class="content-section">
-    <h2><i class="fas fa-user-astronaut"></i> About Me</h2>
-    <div class="about-grid">
-        <p>광운대학교 소프트웨어학부에 재학 중인 이지희입니다. 끊임없이 새로운 기술을 배우고 도전하는 것을 즐깁니다. 사용자 경험을 최우선으로 생각하며, 깔끔하고 효율적인 코드를 작성하기 위해 노력합니다. 특히 웹 개발(프론트엔드/백엔드)과 데이터 시각화에 흥미를 느끼고 있습니다.</p>
-    </div>
-  </section>
-
-<section id="skills" class="content-section">
-    <h2><i class="fas fa-laptop-code"></i> Skills & Knowledge</h2>
-    <p>소프트웨어학부에서 배우고 있는 핵심 언어와 기술에 대한 숙련도를 표시했습니다.</p>
-    <div class="skills-container">
-      <div class="skill-card">
-        <h3>Programming Language</h3>
-        <ul>
-          <li>C, C++</li>
-          <li>Python</li>
-          <li>Java</li>
-        </ul>
-      </div>
-      <div class="skill-card">
-        <h3>Web & Frontend</h3>
-        <ul>
-          <li>HTML5, CSS3, JavaScript</li>
-          <li>반응형 웹 디자인</li>
-          <li>React / Vue.js</li>
-        </ul>
-      </div>
-      <div class="skill-card">
-        <h3>OS & Tools</h3>
-        <ul>
-          <li>Linux</li>
-          <li>Git/GitHub</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-<section id="projects" class="content-section">
-    <h2><i class="fas fa-rocket"></i> 실습 과제 및 Projects</h2>
-    
-    <div class="project-list">
+<main class="container animate-up">
+<section>
+  <div class="hero-content" style="text-align: center; padding: 40px 0;">
+      <h1 style="font-size: 2.5rem; margin-bottom: 20px;">
+        안녕하세요, <span style="color:var(--primary)">이지희</span>입니다.
+      </h1>
+      <p style="font-size: 1.2rem; line-height: 1.8; color: #ddd; margin-bottom: 40px;">
+        <strong>광운대학교 소프트웨어학부 (2024403018)</strong><br>
+        끊임없이 새로운 기술을 배우고 도전하는 개발자입니다.
+      </p>
       
-      <div class="project-item">
-        <h3>실습 1: D-Day 계산기 (Date 객체 활용)</h3>
-        <p>오늘 날짜와 목표 날짜를 입력받아 남은/경과된 일수(D-Day)를 계산하는 기능입니다.</p>
-        <a href="dday.html">실행하기 <i class="fas fa-external-link-alt"></i></a>
-      </div>
-      
-      <div class="project-item">
-        <h3>실습 2: 랜덤 뽑기 (String, Array, Math 객체 활용)</h3>
-        <p>콤마로 구분된 후보 항목을 입력받아 무작위로 하나를 뽑아주는 결정장애 해결 기능입니다.</p>
-        <a href="random.html">실행하기 <i class="fas fa-external-link-alt"></i></a>
-      </div>
-      
-      <div class="project-item">
-        <h3>인터넷활용실습 - 과제 웹사이트</h3>
-        <p>HTML, CSS, JavaScript를 활용하여 제작한 개인 소개 웹페이지입니다.</p>
-        <a href="https://github.com/dwgllml/hw" target="_blank">View Code <i class="fab fa-github"></i></a> | <a href="https://github.com/dwgllml/hw" target="_blank">Live Demo <i class="fas fa-external-link-alt"></i></a>
-      </div>
-      
-    </div>
-  </section>
+      <a href="portfolio.html" class="cta-button">
+        <i class="fas fa-rocket"></i> 프로젝트 보기
+      </a>
+  </div>
+</section>
+</main>
 
-  <section id="contact" class="content-section">
-    <h2><i class="fas fa-envelope"></i> Contact</h2>
-    <p>저와의 협업이나 문의사항이 있다면 언제든지 연락주세요!</p>
-    <div class="contact-info">
-      <p><i class="fas fa-graduation-cap"></i> 학교/학과: 광운대학교 소프트웨어학부 (2024403018)</p>
-      <p><i class="fas fa-at"></i> Email: <a href="mailto:rjswjsgka@kw.ac.kr">rjswjsgka@kw.ac.kr</a></p>
-      <p><i class="fab fa-github"></i> GitHub: <a href="https://github.com/dwgllml/hw" target="_blank">github.com/dwgllml/hw.git</a></p>
-    </div>
-  </section>
-
-  <footer>
-    <small>&copy; <span id="year"></span> 이지희. All rights reserved.</small>
-  </footer>
-
-  <script src="script.js"></script>
+<footer>
+  <small>&copy; <span id="year"></span> 이지희. All rights reserved.</small>
+</footer>
+<script src="script.js"></script>
 </body>
 </html>

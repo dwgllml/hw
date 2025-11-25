@@ -3,78 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>랜덤 뽑기 🎲</title>
+  <title>Random Picker 🎲</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    .choice-box {
-        background-color: #fff3cd; /* 노란색 배경 */
-        border: 2px solid #ffc107;
-        padding: 20px;
-        margin: 20px 0;
-        border-radius: 10px;
-        text-align: center;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .final-choice {
-        font-size: 3.5em;
-        font-weight: 900;
-        color: #d63384; /* 강조색 */
-        line-height: 1.2;
-    }
+      hr { border-color: rgba(255,255,255,0.1); margin: 20px 0; }
   </style>
 </head>
 <body>
 <header>
-  <h1>이름: 이지희</h1>
-  <p class="subtitle">한 줄 소개: 소프트웨어학부 2024403018</p>
+  <h1><i class="fas fa-dice"></i> Random Picker</h1>
+  <p class="subtitle">광운대학교 소프트웨어학부 이지희</p>
 </header>
-<nav>
-  <a href="index.html#home">Home</a> 
-  <a href="index.html#about">About</a> 
-  <a href="index.html#projects">Projects</a> 
-  <a href="index.html#contact">Contact</a> 
-</nav>
-<main class="container">
-<section>
-  <h2>🍽️ 오늘 점심/메뉴/할 일 랜덤 뽑기</h2>
-  <p>콤마(,)로 구분하여 후보 항목을 입력하세요. 자바스크립트가 하나를 골라드립니다!</p>
-  
-  <script>
-    // 1. prompt()로 항목 입력받기
-    let defaultList = "제육볶음, 돈까스, 순대국, 햄버거, 샐러드";
-    let inputString = prompt("항목을 콤마(,)로 구분하여 입력하세요", defaultList);
 
-    // 2. 입력 취소 및 null 확인
+<nav>
+  <a href="index.html"><i class="fas fa-home"></i> Home</a>
+  <a href="about.html"><i class="fas fa-user"></i> About</a>
+  <a href="portfolio.html"><i class="fas fa-rocket"></i> Projects</a>
+  <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+</nav>
+
+<main class="container animate-up">
+<section>
+  <h2>🍽️ 결정장애 해결사</h2>
+  <p style="margin-bottom: 30px; color: #aaa;">
+    고민되는 메뉴나 할 일을 콤마(,)로 구분해 입력하세요.<br>
+    운명의 선택을 대신 해드립니다!
+  </p>
+  
+  <div style="text-align: center;">
+  <script>
+    // 1. 입력 받기
+    let defaultList = "제육볶음, 돈까스, 순대국, 햄버거, 샐러드, 파스타";
+    let inputString = prompt("후보 항목을 콤마(,)로 구분하여 입력하세요", defaultList);
+
+    // 2. 취소 확인
     if (!inputString) {
-      document.write("<h3>❌ 뽑기가 취소되었습니다.</h3>");
+      document.write("<h3 style='color:#ff5252;'>❌ 뽑기가 취소되었습니다.</h3>");
+      document.write("<p>새로고침(F5)하여 다시 시도해주세요.</p>");
     } else {
       
-      // 3. String.split(',')으로 배열로 변환 
+      // 3. 배열 변환
       let items = inputString.split(','); 
 
-      // 4. Math.random() / Math.floor()로 랜덤 인덱스 계산 
+      // 4. 랜덤 인덱스 생성
       let index = Math.floor(Math.random() * items.length); 
 
-      // 5. Array에서 항목 추출 및 .trim()으로 공백 제거
+      // 5. 항목 추출 및 공백 제거
       let choice = items[index].trim();
 
       // 6. 결과 출력
-      document.write("<h4>✔️ 입력된 항목 (" + items.length + "개):</h4>");
-      document.write("<p>" + inputString + "</p>");
+      document.write("<div style='background:rgba(0,0,0,0.2); padding:15px; border-radius:10px; margin-bottom:20px;'>");
+      document.write("<h4><i class='fas fa-list'></i> 후보 리스트 (" + items.length + "개)</h4>");
+      document.write("<p style='color:#ccc; font-size:0.9em;'>" + inputString + "</p>");
+      document.write("</div>");
+      
       document.write("<hr>");
-      document.write("<h3>오늘의 선택은?</h3>");
+      document.write("<h3>🥁 오늘의 선택은?</h3>");
 
+      // style.css의 .choice-box와 .final-choice 클래스 사용
       document.write('<div class="choice-box">');
-      document.write('<p class="final-choice">🎉 ' + choice + ' 🎉</p>');
+      document.write('<div class="final-choice">🎉 ' + choice + ' 🎉</div>');
       document.write('</div>');
-      document.write("<p><i>새로고침(F5)을 눌러 다시 뽑을 수 있습니다.</i></p>");
+      
+      document.write('<br><small style="color:#666;"><i><i class="fas fa-redo"></i> 마음에 안 드시나요? 새로고침(F5) 해보세요!</i></small>');
     }
   </script>
+  </div>
 
 </section>
 </main>
+
 <footer>
-  <small>&copy; <span id="year"></span> 이름: 이지희</small>
+  <small>&copy; <span id="year"></span> 이지희. All rights reserved.</small>
 </footer>
 <script src="script.js"></script>
 </body>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center; 
+            align-items: center;  
+            min-height: 100vh;    
+            background: #121212;
+            padding-top: 0;         
+            margin: 0;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background-color: #1e1e1e;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #333;
+            min-height: 500px; 
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3a2a5a, #1e1e1e);
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .header h3 {
+            margin: 0;
+            color: white;
+            font-size: 1.4rem;
+        }
+        
+        .header p {
+            color: #aaa;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* 댓글 목록 영역 */
+        #commentList {
+            list-style: none;
+            padding: 20px;
+            margin: 0;
+            flex-grow: 1; /* 남은 공간을 리스트가 차지하도록 설정 */
+            overflow-y: auto; /* 내용이 많으면 스크롤 */
+            max-height: 60vh; /* 화면 넘어가지 않게 최대 높이 제한 */
+        }
+
+        /* 리스트 아이템 애니메이션 */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        li {
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease-out forwards;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid var(--primary); /* [수정] 변수명 일치시킴 */
+        }
+
+        li:hover {
+            background-color: #382a2a; 
+            border-left-color: #ff5252;
+            transform: translateX(5px);
+        }
+
+        li span.text { font-size: 0.95rem; }
+        
+        li i.delete-icon {
+            opacity: 0;
+            color: #ff5252;
+            transition: opacity 0.2s;
+        }
+        
+        li:hover i.delete-icon { opacity: 1; }
+
+        /* 하단 플로팅 버튼 영역 */
+        .fab-container {
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-top: 1px solid #333;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 버튼 스타일 */
+        .add-btn {
+            background-color: #ffffff; 
+            color: #121212;            
+            border: none;
+            padding: 14px 40px;        
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 800;          
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); 
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .add-btn:hover {
+            transform: scale(1.05) translateY(-2px);
+            background-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 25px var(--primary);
+        }
+    </style>
+    <script>
+        [cite_start]
+        function addComment() {
+            var inputStr = prompt("새로운 메세지를 입력하세요:", "과제 너무 재미있어요!");
+
+            if (inputStr == null || inputStr.trim() == "") return;
+
+            var parent = document.getElementById("commentList");
+            var newLi = document.createElement("li");
+            
+            newLi.innerHTML = `
+                <span class="text">${inputStr}</span>
+                <i class="fas fa-trash-alt delete-icon"></i>
+            `;
+
+            newLi.onclick = function() {
+                this.style.opacity = '0';
+                this.style.transform = 'translateX(50px)';
+                setTimeout(() => {
+                    this.parentElement.removeChild(this);
+                }, 300);
+            };
+
+            parent.appendChild(newLi);
+            newLi.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</head>
+<body onload="addComment()">
+
+    <div class="app-container">
+        <div class="header">
+            <h3><i class="fas fa-comments"></i> Guestbook</h3>
+            <p>항목을 터치하면 삭제됩니다.</p>
+        </div>
+
+        <ul id="commentList">
+            </ul>
+
+        <div class="fab-container">
+            <button class="add-btn" onclick="addComment()">
+                <i class="fas fa-pen"></i> Write
+            </button>
+        </div>
+    </div>
+    
+    <a href="index.html" style="position: fixed; top: 20px; left: 20px; color: #666; text-decoration: none;">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+
+</body>
+</html>
