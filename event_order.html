@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>이지희 | Neon Pizza</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* 1. 메뉴 아이템 레이아웃 */
+    .menu-item {
+        display: flex; align-items: center; justify-content: space-between;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid transparent; border-radius: 16px;
+        padding: 12px 20px; margin-bottom: 12px; transition: 0.3s; height: 80px;
+    }
+    .menu-item:hover, .menu-item.active {
+        background: rgba(187, 134, 252, 0.08);
+        border-color: rgba(187, 134, 252, 0.3);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    /* 체크박스 영역 */
+    .check-area { width: 40px; display: flex; align-items: center; justify-content: flex-start; }
+    .menu-check { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; margin: 0; }
+
+    /* 정보 영역 */
+    .info-area {
+        flex: 1; display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        padding: 0 10px; cursor: pointer;
+    }
+    .menu-name {
+        font-size: 1.1rem; font-weight: bold; color: #eee;
+        margin-bottom: 4px; text-align: center; word-break: keep-all; line-height: 1.2;
+    }
+    .menu-price { font-size: 0.95rem; color: #888; font-family: 'Courier New', monospace; }
+    .menu-item.active .menu-name { color: var(--secondary); text-shadow: 0 0 8px rgba(3,218,198,0.4); }
+    .menu-item.active .menu-price { color: #ccc; font-weight: bold; }
+
+    /* 수량 조절 버튼 */
+    .qty-control {
+        width: 125px; height: 36px;
+        background: rgba(0, 0, 0, 0.4); border: 1px solid #555; border-radius: 50px;
+        display: flex; align-items: center; justify-content: space-between;
+        overflow: hidden; transition: 0.3s;
+    }
+    .menu-item.active .qty-control { border-color: var(--primary); box-shadow: 0 0 8px rgba(187, 134, 252, 0.2); }
+
+    .qty-btn {
+        width: 35px; height: 100%; background: transparent; border: none;
+        color: var(--primary); font-size: 1.2rem; font-weight: bold;
+        cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;
+    }
+    .qty-btn:hover { background: var(--primary); color: #000; }
+    .qty-btn:active { background: #9e72d6; }
+
+    /* 숫자 입력창 */
+    .menu-qty {
+        flex: 1; height: 100%; background: transparent; border: none;
+        border-left: 1px solid rgba(255,255,255,0.1); 
+        border-right: 1px solid rgba(255,255,255,0.1);
+        color: #fff; text-align: center; font-size: 1.1rem; font-weight: bold;
+        outline: none; padding: 0;
+        -moz-appearance: textfield;
+        cursor: text;
+    }
+    .menu-qty:focus { background: rgba(255,255,255,0.1); }
+    .menu-qty::-webkit-outer-spin-button, .menu-qty::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+    /* 영수증 및 기타 UI */
+    #receipt-preview { background: rgba(0, 0, 0, 0.4); border-top: 2px dashed #444; margin-top: 20px; padding: 20px; color: #ccc; }
+    #receipt-list { list-style: none; padding: 0; margin: 0 0 15px 0; }
+    #receipt-list li { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 8px 0; }
+    
+    /* 모달창 스타일 */
+    #custom-modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.85); z-index: 2000;
+        justify-content: center; align-items: center; backdrop-filter: blur(8px);
+    }
+    .modal-content {
+        background: #121212; padding: 40px; border-radius: 20px;
+        border: 2px solid var(--secondary); text-align: center;
+        box-shadow: 0 0 40px rgba(3, 218, 198, 0.2); width: 90%; max-width: 380px;
+        transition: 0.3s;
+    }
+    
+    /* 에러 모달 테마 */
+    .modal-content.error {
+        border-color: #ff4444;
+        box-shadow: 0 0 40px rgba(255, 68, 68, 0.2);
+        animation: shake 0.4s;
+    }
+    
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+  </style>
+  <script>
+    /* 1. 수량 조절 (버튼용) */
+    function updateQty(btn, change) {
+        var row = btn.closest('.menu-item');
+        var input = row.querySelector('.menu-qty');
+        
+        var newVal = parseInt(input.value || 0) + change;
+        if (newVal < 1) newVal = 1; 
+
+        input.value = newVal;
+        autoCheck(row);
+        recalc(); 
+    }
+
+    /* 수량 직접 입력 (키보드용) */
+    function manualQtyInput(input) {
+        var row = input.closest('.menu-item');
+        var val = parseInt(input.value);
+        if (!isNaN(val) && val > 0) autoCheck(row);
+        recalc();
+    }
+
+    /* 입력창 벗어났을 때 검증 */
+    function checkQtyBlur(input) {
+        var val = parseInt(input.value);
+        if (isNaN(val) || val < 1) {
+            input.value = 1;
+            recalc();
+        }
+    }
+
+    /* 공통: 수량 변경 시 자동 체크 활성화 */
+    function autoCheck(row) {
+        var checkbox = row.querySelector('.menu-check');
+        if (!checkbox.checked) checkbox.checked = true;
+    }
+
+    /* 정보 영역 클릭 시 체크박스 토글 */
+    function toggleCheck(ele) {
+        var row = ele.closest('.menu-item');
+        var checkbox = row.querySelector('.menu-check');
+        checkbox.checked = !checkbox.checked;
+        recalc();
+    }
+
+    /* 가격 계산 */
+    function recalc() {
+        var total = 0; 
+        var items = document.getElementsByClassName("menu-item");
+        var receiptList = document.getElementById("receipt-list");
+        receiptList.innerHTML = ""; 
+
+        for (var i = 0; i < items.length; i++) {
+            var row = items[i];
+            var check = row.querySelector(".menu-check");
+            var qtyInput = row.querySelector(".menu-qty");
+            var name = row.querySelector(".menu-name").innerText;
+            
+            if (check.checked) { 
+                row.classList.add("active"); 
+                var price = parseInt(check.value);
+                var quantity = parseInt(qtyInput.value);
+                if (isNaN(quantity) || quantity < 1) { quantity = 1; }
+                
+                var subtotal = price * quantity;
+                total += subtotal; 
+
+                var li = document.createElement("li");
+                li.innerHTML = `<span>${name} <small style="color:#888">x${quantity}</small></span> <span>${subtotal.toLocaleString()}</span>`;
+                receiptList.appendChild(li);
+            } else {
+                row.classList.remove("active");
+            }
+        }
+        document.getElementById("total").value = total.toLocaleString(); 
+        document.getElementById("receipt-total").innerText = total.toLocaleString();
+
+        if (total === 0) receiptList.innerHTML = "<li style='justify-content:center; color:#555;'>선택된 메뉴가 없습니다.</li>";
+    }
+
+    /* 주소 입력 확인 (onblur) */
+    function checkAddress() {
+        var addr = document.getElementById("addr");
+        if (addr.value.trim() == "") {
+            showModal('error', 'MISSING ADDRESS', '배달 받으실 주소를 입력해주세요.');
+            addr.style.borderColor = "#ff4444";
+        } else {
+            addr.style.borderColor = "#444";
+        }
+    }
+
+    /* 전송 제어 (onsubmit) */
+    function validate(e) {
+        e.preventDefault(); 
+        var addr = document.getElementById("addr");
+        var totalStr = document.getElementById("total").value.replace(/,/g, ''); 
+        var total = parseInt(totalStr || 0);
+
+        // 1. 주소 에러
+        if (addr.value.trim() == "") {
+            checkAddress();
+            return false;
+        }
+
+        // 2. 메뉴 에러
+        if (total == 0) {
+            showModal('error', 'NO MENU SELECTED', '메뉴를 하나 이상 선택해주세요.');
+            return false;
+        }
+
+        // 3. 성공
+        showModal('success', 'ORDER CONFIRMED', total);
+        return false; 
+    }
+
+    /* 통합 모달 표시 함수 */
+    function showModal(type, title, data) {
+        var modal = document.getElementById("custom-modal");
+        var content = document.querySelector(".modal-content");
+        var icon = document.getElementById("modal-icon");
+        var titleEl = document.getElementById("modal-title");
+        var msgEl = document.getElementById("modal-msg");
+        var btn = document.getElementById("modal-btn");
+
+        modal.style.display = "flex";
+        
+        // 기존 클래스 초기화
+        content.classList.remove("error");
+        
+        if (type === 'error') {
+            content.classList.add("error");
+            icon.className = "fas fa-exclamation-circle";
+            icon.style.color = "#ff4444";
+            icon.style.animation = "shake 0.5s";
+            titleEl.innerText = title;
+            titleEl.style.color = "#ff4444";
+            msgEl.innerHTML = `<span style="color:#ccc">${data}</span>`;
+            
+            btn.onclick = function() { 
+                modal.style.display = "none"; 
+                if(title === 'MISSING ADDRESS') document.getElementById("addr").focus();
+            }
+            
+        } else {
+            icon.className = "fas fa-pizza-slice";
+            icon.style.color = "var(--secondary)";
+            icon.style.animation = "bounce 1s infinite";
+            titleEl.innerText = title;
+            titleEl.style.color = "var(--secondary)";
+            
+            var time = Math.floor(Math.random() * 20) + 30;
+            msgEl.innerHTML = `
+                <div style="margin:20px 0; border-top:1px solid #333; border-bottom:1px solid #333; padding:15px 0;">
+                    총 결제금액<br><strong style="color:#fff; font-size:1.6rem;">${data.toLocaleString()}원</strong>
+                </div>
+                예상 배달 시간: <span style="color:#ffcc00; font-weight:bold;">${time}분</span>
+            `;
+            btn.onclick = function() { location.reload(); }
+        }
+    }
+  </script>
+</head>
+<body>
+<header>
+  <h1>Smart Pizza Order</h1>
+  <p class="subtitle">스마트한 피자 주문 시스템</p>
+</header>
+
+<nav>
+  <a href="index.html"><i class="fas fa-home"></i> Home</a>
+  <a href="about.html"><i class="fas fa-user"></i> About</a>
+  <a href="portfolio.html"><i class="fas fa-rocket"></i> Projects</a>
+  <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+</nav>
+
+<main class="container animate-up">
+  <section>
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h2><i class="fas fa-utensils"></i> Select Menu</h2>
+        <p style="color: #ccc; font-size: 0.95rem;">메뉴 이름을 클릭하거나 수량을 입력하세요.</p>
+    </div>
+
+    <form action="#" onsubmit="return validate(event)" class="contact-form" style="max-width: 600px; margin: 0 auto;">
+        
+        <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 25px;">
+            <h4 style="color: var(--secondary); margin-bottom: 20px; text-align:center; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                MENU LIST
+            </h4>
+            
+            <ul style="list-style: none; margin: 0; padding: 0;">
+                
+                <li class="menu-item">
+                    <div class="check-area">
+                        <input type="checkbox" class="menu-check" value="15000" onchange="recalc()"> 
+                    </div>
+                    <div class="info-area" onclick="toggleCheck(this)">
+                        <span class="menu-name">콤비네이션 피자</span>
+                        <span class="menu-price">15,000원</span>
+                    </div>
+                    <div class="qty-control">
+                        <button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button>
+                        <input type="number" class="menu-qty" value="1" min="1" 
+                               oninput="manualQtyInput(this)" onblur="checkQtyBlur(this)">
+                        <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+                    </div>
+                </li>
+
+                <li class="menu-item">
+                    <div class="check-area">
+                        <input type="checkbox" class="menu-check" value="12000" onchange="recalc()"> 
+                    </div>
+                    <div class="info-area" onclick="toggleCheck(this)">
+                        <span class="menu-name">페퍼로니 피자</span>
+                        <span class="menu-price">12,000원</span>
+                    </div>
+                    <div class="qty-control">
+                        <button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button>
+                        <input type="number" class="menu-qty" value="1" min="1" 
+                               oninput="manualQtyInput(this)" onblur="checkQtyBlur(this)">
+                        <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+                    </div>
+                </li>
+
+                <li class="menu-item">
+                    <div class="check-area">
+                        <input type="checkbox" class="menu-check" value="2000" onchange="recalc()"> 
+                    </div>
+                    <div class="info-area" onclick="toggleCheck(this)">
+                        <span class="menu-name">치즈 토핑 추가</span>
+                        <span class="menu-price">2,000원</span>
+                    </div>
+                    <div class="qty-control">
+                        <button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button>
+                        <input type="number" class="menu-qty" value="1" min="1" 
+                               oninput="manualQtyInput(this)" onblur="checkQtyBlur(this)">
+                        <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+                    </div>
+                </li>
+
+                <li class="menu-item">
+                    <div class="check-area">
+                        <input type="checkbox" class="menu-check" value="1500" onchange="recalc()"> 
+                    </div>
+                    <div class="info-area" onclick="toggleCheck(this)">
+                        <span class="menu-name">제로 콜라 1.25L</span>
+                        <span class="menu-price">1,500원</span>
+                    </div>
+                    <div class="qty-control">
+                        <button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button>
+                        <input type="number" class="menu-qty" value="1" min="1" 
+                               oninput="manualQtyInput(this)" onblur="checkQtyBlur(this)">
+                        <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+                    </div>
+                </li>
+
+            </ul>
+
+            <div id="receipt-preview">
+                <div style="display: flex; justify-content: space-between; font-size: 1.1rem; color: #fff; font-weight: bold;">
+                    <span>TOTAL</span>
+                    <span style="color:var(--primary)"><span id="receipt-total">0</span>원</span>
+                </div>
+                <div style="margin-top:10px; border-top: 1px dashed #555; padding-top:10px;">
+                    <ul id="receipt-list">
+                        <li style="color:#555; font-size:0.9rem; justify-content:center;">선택된 메뉴가 없습니다.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label for="addr" style="margin-bottom: 8px; display:block;"><i class="fas fa-map-marker-alt"></i> 배달 주소</label>
+            <input type="text" id="addr" onblur="checkAddress()" placeholder="주소를 입력해주세요 (필수)" style="border-radius: 50px; padding: 15px 25px;">
+        </div>
+        <input type="hidden" id="total" value="0">
+
+        <div style="text-align: center; margin-top: 40px; display: flex; gap: 15px; justify-content: center;">
+            <button type="submit" style="flex: 2; font-size: 1.1rem; box-shadow: 0 0 15px rgba(187,134,252,0.3);">
+                <i class="fas fa-check"></i> 주문하기
+            </button>
+            <button type="reset" onclick="setTimeout(recalc, 0)" style="flex: 1; background: #222; color: #aaa; border: 1px solid #444;">
+                <i class="fas fa-redo"></i>
+            </button>
+        </div>
+    </form>
+  </section>
+</main>
+
+<div id="custom-modal">
+    <div class="modal-content">
+        <i id="modal-icon" class="fas fa-pizza-slice" style="font-size: 3.5rem; margin-bottom: 15px;"></i>
+        <h2 id="modal-title" style="margin-bottom: 5px;">TITLE</h2>
+        <div id="modal-msg"></div>
+        <button id="modal-btn" style="width: 100%; margin-top: 15px;">확인</button>
+    </div>
+</div>
+
+<footer><small>&copy; <span id="year"></span> 이지희. All rights reserved.</small></footer>
+<script src="script.js"></script>
+</body>
+</html>

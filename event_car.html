@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이지희 | Keyboard Car </title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        #game-stage {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background-color: #050505;
+            background-image: 
+                linear-gradient(rgba(187, 134, 252, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(187, 134, 252, 0.15) 1px, transparent 1px);
+            background-size: 50px 50px;
+            border: 3px solid var(--primary);
+            border-radius: 15px;
+            overflow: hidden; 
+            box-shadow: 0 0 25px rgba(187, 134, 252, 0.15);
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        #game-stage:focus {
+            border-color: #fff;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            outline: none;
+        }
+
+        /* 2. 플레이어 자동차 */
+        #player {
+            position: absolute; /*  절대 위치 필수 */
+            width: 50px; height: 30px;
+            font-size: 2rem;
+            color: var(--secondary);
+            filter: drop-shadow(0 0 8px var(--secondary));
+            z-index: 100;
+            display: flex; justify-content: center; align-items: center;
+            transition: transform 0.05s linear;
+        }
+        #player::after {
+            content: ''; position: absolute; right: -40px; 
+            width: 50px; height: 30px;
+            background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        /* 장애물 */
+        .wall {
+            position: absolute;
+            background: rgba(255, 68, 68, 0.1);
+            border: 2px solid #ff4444;
+            box-shadow: 0 0 10px #ff4444, inset 0 0 15px rgba(255, 0, 0, 0.2);
+            border-radius: 6px;
+            z-index: 50;
+            color: #ff4444;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 0.8rem; font-weight: bold; letter-spacing: 1px;
+        }
+
+        /* 결승선 */
+        #finish-line {
+            position: absolute; right: 0; top: 0; bottom: 0; width: 60px;
+            background: repeating-linear-gradient(45deg, var(--secondary), var(--secondary) 10px, transparent 10px, transparent 20px);
+            opacity: 0.4; border-left: 4px solid var(--secondary);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; writing-mode: vertical-rl; text-orientation: upright;
+            font-weight: bold; letter-spacing: 5px; z-index: 10;
+        }
+
+        /* UI 요소 */
+        #hud {
+            position: absolute; top: 15px; left: 15px; padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.8); border: 1px solid #555; border-radius: 20px;
+            color: #fff; font-family: monospace; font-size: 1rem; z-index: 200;
+        }
+        #overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: none;
+            flex-direction: column; justify-content: center; align-items: center; z-index: 300;
+        }
+        #overlay h2 { font-size: 3rem; margin-bottom: 20px; text-shadow: 0 0 20px currentColor; }
+        .win { color: var(--secondary); } .lose { color: #ff4444; }
+        .retry-btn {
+            padding: 10px 30px; font-size: 1.2rem; font-weight: bold;
+            background: #fff; border: none; border-radius: 50px; cursor: pointer; transition: 0.3s;
+        }
+        .retry-btn:hover { transform: scale(1.1); box-shadow: 0 0 20px #fff; }
+    </style>
+
+    <script>
+        // 설정 변수
+        let x = 30;     
+        let y = 230;    
+        const step = 20; // 이동 거리
+        
+        // 차 크기 (충돌 계산 및 화면 이탈 방지용)
+        const carW = 50; 
+        const carH = 30;
+
+        let isGameOver = false;
+
+        window.onload = function() {
+            const player = document.getElementById("player");
+            const hud = document.getElementById("hud-coords");
+            const stage = document.getElementById("game-stage");
+            const overlay = document.getElementById("overlay");
+            const resultTitle = document.getElementById("result-title");
+            
+            updateView();
+
+            // 클릭 시 포커스 (키보드 입력 활성화)
+            stage.onclick = function() { this.focus(); };
+
+            // 키보드 입력 감지 (window.onkeydown)
+            window.onkeydown = function(e) {
+                if (isGameOver) {
+                    if (e.key === 'Enter' || e.key.toLowerCase() === 'r') resetGame();
+                    return;
+                }
+
+                // 방향키(37~40) 입력 시 스크롤 방지
+                if (e.keyCode >= 37 && e.keyCode <= 40) {
+                    e.preventDefault(); 
+                } else {
+                    return; 
+                }
+
+                // 이동 전 위치 저장
+                const prevX = x;
+                const prevY = y;
+                
+                // 화면 크기 계산 (이탈 방지용)
+                const stageW = stage.clientWidth;
+                const stageH = stage.clientHeight;
+
+                // 화면 이탈 방지 로직 포함 
+                switch(e.keyCode) {
+                    case 37: // Left (←)
+                        if (x - step >= 0) { 
+                            x -= step;
+                            player.style.transform = "rotateY(180deg)"; 
+                        }
+                        break;
+                    case 38: // Up (↑)
+                        if (y - step >= 0) { 
+                            y -= step;
+                            player.style.transform = "rotate(-90deg)";
+                        }
+                        break;
+                    case 39: // Right (→)
+                        // 차의 너비(carW)를 고려하여 벽 뚫림 방지
+                        if (x + step <= stageW - carW) { 
+                            x += step;
+                            player.style.transform = "rotateY(0deg)";
+                        }
+                        break;
+                    case 40: // Down (↓)
+                        // 차의 높이(carH)를 고려하여 바닥 뚫림 방지
+                        if (y + step <= stageH - carH) { 
+                            y += step;
+                            player.style.transform = "rotate(90deg)";
+                        }
+                        break;
+                }
+
+                updateView(); 
+
+                // 충돌 감지
+                const status = checkCollision();
+                
+                if (status === 'WALL') {
+                    isGameOver = true;
+                    x = prevX; y = prevY; // 충돌 시 뒤로 튕김
+                    updateView();
+                    showResult("CRASHED!", "lose");
+                } 
+                else if (status === 'WIN') {
+                    isGameOver = true;
+                    showResult("FINISH!", "win");
+                }
+            };
+
+            function updateView() {
+                // DOM에 좌표 반영
+                player.style.left = x + "px";
+                player.style.top = y + "px";
+                hud.innerText = `(${x}, ${y})`;
+            }
+
+            function checkCollision() {
+                const pRect = player.getBoundingClientRect();
+                const walls = document.getElementsByClassName("wall");
+                
+                // 장애물 충돌 확인
+                for (let w of walls) {
+                    const wRect = w.getBoundingClientRect();
+                    if (!(pRect.right < wRect.left + 5 || 
+                          pRect.left > wRect.right - 5 || 
+                          pRect.bottom < wRect.top + 5 || 
+                          pRect.top > wRect.bottom - 5)) {
+                        return 'WALL';
+                    }
+                }
+
+                // 결승선 통과 확인
+                const finish = document.getElementById("finish-line");
+                const fRect = finish.getBoundingClientRect();
+                if (pRect.right > fRect.left + 10) return 'WIN';
+
+                return 'NONE';
+            }
+
+            function showResult(text, type) {
+                resultTitle.innerText = text;
+                resultTitle.className = type;
+                overlay.style.display = "flex";
+            }
+
+            window.resetGame = function() {
+                x = 30; y = 230;
+                isGameOver = false;
+                overlay.style.display = "none";
+                updateView();
+            }
+        };
+    </script>
+</head>
+<body>
+<header>
+    <h1>Keyboard Car</h1>
+    <p class="subtitle">방향키로 장애물을 피해 질주하세요!</p>
+</header>
+
+<nav>
+  <a href="index.html"><i class="fas fa-home"></i> Home</a>
+  <a href="about.html"><i class="fas fa-user"></i> About</a>
+  <a href="portfolio.html"><i class="fas fa-rocket"></i> Projects</a>
+  <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+</nav>
+
+<main class="container animate-up">
+    <section>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <p style="color: #aaa; margin-bottom: 5px;">
+                ⚠️ 게임 시작 전, <strong>반드시 아래 검은 화면을 한 번 클릭</strong>해주세요.
+            </p>
+            <p style="color: #ccc;">
+                그 다음 <span style="color:var(--primary); font-weight:bold;">방향키(← ↑ → ↓)</span>를 누르면 자동차가 움직입니다.
+            </p>
+        </div>
+
+        <div id="game-stage" tabindex="0">
+            <div id="hud">POS: <span id="hud-coords" style="color:var(--primary);">(30, 230)</span></div>
+
+            <div id="player"><i class="fas fa-car-side"></i></div>
+
+            <div class="wall" style="left: 200px; top: 0; width: 30px; height: 200px;">WALL</div>
+            <div class="wall" style="left: 200px; bottom: 0; width: 30px; height: 200px;">WALL</div>
+            <div class="wall" style="left: 450px; top: 180px; width: 50px; height: 140px;">BLOCK</div>
+            <div class="wall" style="left: 650px; top: 0; width: 30px; height: 150px;"></div>
+            <div class="wall" style="left: 650px; bottom: 0; width: 30px; height: 150px;"></div>
+
+            <div id="finish-line">FINISH</div>
+
+            <div id="overlay">
+                <h2 id="result-title">GAME OVER</h2>
+                <button class="retry-btn" onclick="resetGame()">RETRY <i class="fas fa-redo"></i></button>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<footer>
+  <small>&copy; <span id="year"></span> 이지희. All rights reserved.</small>
+</footer>
+<script src="script.js"></script>
+</body>
+</html>
